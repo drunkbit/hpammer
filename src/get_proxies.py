@@ -6,11 +6,11 @@ import sys
 # delete old proxies for a clean start
 delete_old_proxies = True
 
-# define urls: using https://github.com/TheSpeedX/PROXY-List
-url = f"https://api.github.com/repos/TheSpeedX/PROXY-List/commits"
-url_raw = f"https://raw.githubusercontent.com/TheSpeedX/PROXY-List"
+url_repo = "https://github.com/TheSpeedX/PROXY-List"
+url_api = "https://api.github.com/repos/TheSpeedX/PROXY-List/commits"
+url_raw = "https://raw.githubusercontent.com/TheSpeedX/PROXY-List"
 
-response = requests.get(url)
+response = requests.get(url_api)
 commits = response.json()
 
 # if api rate limit is exceeded
