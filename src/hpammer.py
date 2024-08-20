@@ -8,57 +8,54 @@ import requests
 import time
 
 # define request
-number = 0
 url = ""
 headers = {
     "Host": "",
     "Accept": "application/json",
     "User-Agent": UserAgent(min_percentage=20.0).random,
-    "X-Requested-With": "XMLHttpRequest",
 }
-data = {"choice[]": f"{number}"}
+data = {"data": "empty"}
 
 # get proxies
+path = "proxies"
 protocols = ["http", "socks4", "socks5"]
 proxies = []
 for protocol in protocols:
-    for file_name in os.listdir(f"proxies/{protocol}"):
-        file_path = os.path.join(f"proxies/{protocol}", file_name)
+    for file_name in os.listdir(f"{path}/{protocol}"):
+        file_path = os.path.join(f"{path}/{protocol}", file_name)
         with open(file_path, "r") as f:
             proxies += [f"{protocol}://" + proxy for proxy in f.read().splitlines()]
 
 
-# vote
-def vote():
+# send request
+def send(rate_limit: int = 20, sleep_interval: int = 5):
     proxy = random.choice(proxies)
     proxies.remove(proxy)
-    # print(f"{datetime.now()}: {proxy}: start ({len(proxies)} proxies left)")
+    print(f"{datetime.now()}: {proxy}: start ({len(proxies)} proxies left)")
 
-    for j in range(1, 21):
+    for j in range(0, rate_limit):
         try:
             session = requests.Session()
             session.proxies = {"http": proxy, "https": proxy}
             response = session.post(url, headers=headers, data=data, timeout=10)
             response_data = json.loads(response.text)
+
+            # custom response handling
             result = response_data["result"][""]
             text = result["text"]
             percentage = result["percentage"]
             count = result["count"]
-            print(
-                f"{datetime.now()}: {proxy}: nr {j}: {percentage}% / {count} votes: {text} - {len(proxies)} proxies left"
-            )
-            time.sleep(random.randint(2, 5))
+            output = f"{percentage}% / {count} votes: {text}"
+
+            print(f"{datetime.now()}: {proxy}: nr {j}: {output}")
+            time.sleep(random.randint(1, sleep_interval))
 
         except:
-            try:
-                test = response_data["result"]
-                # print(response_data)
-            except:
-                # print(f"{datetime.now()}: {proxy}: error")
-                break
+            print(f"{datetime.now()}: {proxy}: error")
+            break
 
 
-# vote parallel
+# send requests parallel
 with ThreadPoolExecutor(max_workers=100) as executor:
     for i in range(0, len(proxies)):
-        executor.submit(vote)
+        executor.submit(send)
