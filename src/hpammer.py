@@ -1,11 +1,11 @@
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
+from fake_useragent import UserAgent  # https://github.com/fake-useragent/fake-useragent
 import json
 import os
 import random
 import requests
 import time
-from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime
-from fake_useragent import UserAgent  # https://github.com/fake-useragent/fake-useragent
 
 # define request
 number = 0
